@@ -12,8 +12,6 @@ import nest.topology as tp
 import ggplot
 
 
-
-
 nest.ResetKernel()
 
 neuron_model = 'iaf_psc_exp'
