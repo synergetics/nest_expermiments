@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 
 import sys
 sys.path.append('/opt/lib/python2.7/site-packages/')
@@ -13,6 +14,7 @@ import ggplot
 
 
 nest.ResetKernel()
+nest.SetKernelStatus({'overwrite_files': True})
 
 neuron_model = 'iaf_psc_exp'
 
@@ -40,8 +42,12 @@ nest.SetStatus(c, {
   'freq': 10.,
   # 'phi': 0.
 })
+
 s = nest.Create('spike_detector')
+nest.SetStatus(s, {'label': 'spikes', 'to_file': True})
+
 v = nest.Create('voltmeter')
+nest.SetStatus(v, {'label': 'voltages', 'to_file': True})
 
 nest.Connect(b, a, 'all_to_all', {'weight': 7.15, 'model': 'static_synapse'})
 nest.Connect(c, a, 'all_to_all', {'weight': 7.15, 'model': 'static_synapse'})
@@ -50,8 +56,9 @@ nest.Connect(a, s)
 # nest.Connect(c, s)
 nest.Connect(v, a)
 
-nest.Simulate(500)
+nest.Simulate(10000)
 nest.raster_plot.from_device(s, hist=True)
+pylab.savefig('poisson_generator.png')
 # nest.voltage_trace.from_device(v)
 
 pylab.show()
