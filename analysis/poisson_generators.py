@@ -39,7 +39,7 @@ c = nest.Create('spg')
 nest.SetStatus(c, {
   'dc': 100.*100.,
   'ac': 100.*100.-1,
-  'freq': 10.,
+  'freq': 20.,
   # 'phi': 0.
 })
 
