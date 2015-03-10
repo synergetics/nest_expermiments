@@ -1,17 +1,26 @@
 #!/usr/bin/env R
 
+# http://stackoverflow.com/questions/3485456/useful-little-functions-in-r
+
+spike_file = 'spikes-103-0.gdf'
+
+voltage_file = 'voltages-104-0.dat'
+
+t_sim = 10
+
+
+
 # Gets the frequencies returned by the FFT function
 getFFTFreqs = function(Nyq.Freq, data) {
-  if ((length(data) %% 2) == 1) # Odd number of samples
-      {
-      FFTFreqs = c(seq(0, Nyq.Freq, length.out=(length(data)+1)/2),
-             seq(-Nyq.Freq, 0, length.out=(length(data)-1)/2))
-      }
-  else # Even number
-      {
-      FFTFreqs = c(seq(0, Nyq.Freq, length.out=length(data)/2),
-             seq(-Nyq.Freq, 0, length.out=length(data)/2))
-      }
+  # Odd number of sample
+  if ((length(data) %% 2) == 1) {
+    FFTFreqs = c(seq(0, Nyq.Freq, length.out=(length(data)+1)/2),
+           seq(-Nyq.Freq, 0, length.out=(length(data)-1)/2))
+  }
+  else {
+    FFTFreqs = c(seq(0, Nyq.Freq, length.out=length(data)/2),
+         seq(-Nyq.Freq, 0, length.out=length(data)/2))
+  }
 
   return (FFTFreqs)
 }
@@ -60,13 +69,12 @@ bin.ts = function(data, time, bins) {
 }
 
 
-spikes = read.csv2('spikes-103-0.gdf',
+spikes = read.csv2(spike_file,
   sep='\t',
   col.names=c('neuron', 'time', 'spike'),
   header=FALSE,
   stringsAsFactors=FALSE
 )
-
 spikes$spike = 1
 spikes$time = as.numeric(spikes$time)
 
@@ -74,5 +82,19 @@ spikes.binned = bin.ts(spikes$spike, spikes$time, 1000)
 
 par(mfrow=c(2,1))
 plotFFT(spikes.binned$time, spikes.binned$freq, 1000/10)
+
+
+voltages = read.csv2(voltage_file,
+  sep='\t',
+  col.names=c('neuron', 'time', 'voltage', 'NA'),
+  header=FALSE,
+  stringsAsFactors=FALSE
+)
+voltages$time = as.numeric(voltages$time)
+voltages$voltage = as.numeric(voltages$voltage)
+
+voltages.binned = bin.ts(voltages$voltage, voltages$time, 1000)
+
+plotFFT(voltages.binned$time, voltages.binned$freq, nrow(voltages.binned)/t_sim)
 
 
